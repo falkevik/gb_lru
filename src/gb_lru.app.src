@@ -1,7 +1,6 @@
 {application, gb_lru,
  [{description, "gb_lru"},
   {vsn, "0.1"},
-  {modules, []},
   {registered, []},
   {applications, []}
  ]}.
