@@ -480,15 +480,6 @@ ERL_NIF_TERM get_registered_pid(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
     return enif_make_pid(env, &(bt_lru->pid));
 }
 
-ERL_NIF_TERM get_hash(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
-
-    if (argc != 1) {
-	return enif_make_badarg(env);
-    }
-    
-    return enif_make_ulong(env, enif_hash_term(argv[0]));
-}
-
 ERL_NIF_TERM get_size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
     object_resource *lru;
     LRUBtree<ErlTerm,ErlTerm> *bt_lru;
@@ -548,7 +539,6 @@ ERL_NIF_TERM set_max_size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
 ErlNifFunc nif_funcs[] = {
     {"create", 1, create},
     {"close", 1, close, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"get_hash", 1, get_hash},
     {"register_pid", 2, register_pid},
     {"unregister_pid", 1, unregister_pid},
     {"get_registered_pid", 1, get_registered_pid},

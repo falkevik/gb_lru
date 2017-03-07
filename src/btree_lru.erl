@@ -4,7 +4,6 @@
 	 close/1,
 	 register_pid/2,
 	 unregister_pid/1,
-	 get_hash/1,
 	 get_registered_pid/1,
 	 set_max_size/2,
 	 get_max_size/1,
@@ -89,9 +88,6 @@ oldest(_Tab) ->
     erlang:nif_error(nif_library_not_loaded).
 
 latest(_Tab) ->
-    erlang:nif_error(nif_library_not_loaded).
-
-get_hash(_Term) ->
     erlang:nif_error(nif_library_not_loaded).
 
 close(_Tab) ->
