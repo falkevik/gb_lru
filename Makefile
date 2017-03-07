@@ -18,7 +18,7 @@ eunit:
 	-s init stop
 
 clean:
-	$(MAKE) -C $(SUBDIRS) clean
+	@for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
 
 realclean: clean
 
