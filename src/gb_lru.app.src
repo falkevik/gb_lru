@@ -1,5 +1,5 @@
-{application, btree_lru,
- [{description, "btree_lru"},
+{application, gb_lru,
+ [{description, "gb_lru"},
   {vsn, "0.1"},
   {modules, []},
   {registered, []},
