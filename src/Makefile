@@ -1,5 +1,3 @@
-include ../vsn.mk
-
 EBIN = ../ebin
 
 RM ?= rm -f

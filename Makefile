@@ -1,4 +1,3 @@
-include ./vsn.mk
 APP_NAME = gb_lru
 
 SUBDIRS = src c_src
