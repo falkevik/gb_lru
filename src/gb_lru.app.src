@@ -1,0 +1,7 @@
+{application, btree_lru,
+ [{description, "btree_lru"},
+  {vsn, "0.1"},
+  {modules, []},
+  {registered, []},
+  {applications, []}
+ ]}.
