@@ -386,6 +386,62 @@ ERL_NIF_TERM latest(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
     return enif_make_tuple2(env, key, value);
 }
 
+ERL_NIF_TERM last(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+    object_resource *lru;
+    LRUBtree<ErlTerm,ErlTerm> *bt_lru;
+    LRUNode<ErlTerm,ErlTerm> *node;
+    ERL_NIF_TERM key;
+    ERL_NIF_TERM value;
+
+    if (argc != 1) {
+	return enif_make_badarg(env);
+    }
+
+    if (!enif_get_resource(env, argv[0], lruResource, (void **) &lru)) {
+	return enif_make_badarg(env);
+    }
+
+    bt_lru = (LRUBtree<ErlTerm,ErlTerm> *) lru->object;
+
+    node = bt_lru->bmap.rbegin()->second;
+
+    if (!node)
+	return enif_make_tuple2(env, atom_error, atom_invalid);
+
+    key = enif_make_copy(env, node->key.t);
+    value = enif_make_copy(env, node->data.t);
+
+    return enif_make_tuple2(env, key, value);
+}
+
+ERL_NIF_TERM first(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+    object_resource *lru;
+    LRUBtree<ErlTerm,ErlTerm> *bt_lru;
+    LRUNode<ErlTerm,ErlTerm> *node;
+    ERL_NIF_TERM key;
+    ERL_NIF_TERM value;
+
+    if (argc != 1) {
+	return enif_make_badarg(env);
+    }
+
+    if (!enif_get_resource(env, argv[0], lruResource, (void **) &lru)) {
+	return enif_make_badarg(env);
+    }
+
+    bt_lru = (LRUBtree<ErlTerm,ErlTerm> *) lru->object;
+
+    node = bt_lru->bmap.begin()->second;
+
+    if (!node)
+	return enif_make_tuple2(env, atom_error, atom_invalid);
+
+    key = enif_make_copy(env, node->key.t);
+    value = enif_make_copy(env, node->data.t);
+
+    return enif_make_tuple2(env, key, value);
+}
+
 ERL_NIF_TERM write(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
     object_resource *lru;
     LRUBtree<ErlTerm,ErlTerm> *bt_lru;
@@ -547,6 +603,8 @@ ErlNifFunc nif_funcs[] = {
     {"set_max_size", 2, set_max_size},
     {"oldest", 1, oldest},
     {"latest", 1, latest},
+    {"last", 1, last},
+    {"first", 1, first},
     {"read", 2, read},
     {"next", 2, next},
     {"prev", 2, prev},

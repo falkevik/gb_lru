@@ -17,7 +17,9 @@
 	 seek/2,
 	 iterate_next/2,
 	 oldest/1,
-	 latest/1]).
+	 latest/1,
+	 last/1,
+	 first/1]).
 
 
 
@@ -93,3 +95,8 @@ latest(_Tab) ->
 close(_Tab) ->
     erlang:nif_error(nif_library_not_loaded).
 
+last(_Tab) ->
+    erlang:nif_error(nif_library_not_loaded).
+
+first(_Tab) ->
+    erlang:nif_error(nif_library_not_loaded).
