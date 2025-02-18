@@ -13,10 +13,10 @@ TARGETS = $(DIR_TARGETS) \
 	  $(FILE_TARGETS)
 OS_NAME = $(shell uname -s)
 
-CFLAGS = -std=c++11 -Wall -fpic -g -O3 $(shell erl -noinput -eval 'io:format("-I~s/erts-~s/include", [code:root_dir(), erlang:system_info(version)]), halt(0).')
+CFLAGS = -std=c++17 -Wall -fpic -g -O3 $(shell erl -noinput -eval 'io:format("-I~s/erts-~s/include", [code:root_dir(), erlang:system_info(version)]), halt(0).')
 
 ifeq ($(OS_NAME), Darwin)
-LDFLAGS = -bundle -flat_namespace -undefined suppress -fpic
+LDFLAGS = -bundle -flat_namespace -undefined dynamic_lookup -fpic
 else
 LDFLAGS = -shared -fpic
 endif

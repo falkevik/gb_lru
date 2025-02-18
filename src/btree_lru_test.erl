@@ -1,9 +1,16 @@
 -module(btree_lru_test).
 
--compile(export_all).
-
 -export([create/0,
-	 create/1]).
+	     create/1,
+         write/1,
+         write/2,
+         read/2,
+         ets_read/2,
+         ets_write/2,
+         timing_ets_read/1,
+         timing_ets_write/1,
+         timing_read/1,
+         timing_write/1]).
 
 
 
