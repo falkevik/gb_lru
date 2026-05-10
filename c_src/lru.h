@@ -134,12 +134,14 @@ class LRUBtree {
     }
  
     void check_size(void *call_env) {
-	if (size > max_size) {
-	    if (oldest) { // remove check if oldest exist and rely on max_size always being positive
-		if (node_kickout)
-		    node_kickout(this, oldest, call_env);
-		erase(oldest->key);
-	    }
+	while (size > max_size && oldest) {
+	    LRUNode<K,V> *evicted = oldest;
+	    if (node_kickout)
+		node_kickout(this, evicted, call_env);
+	    erase(evicted);          // unlink + free kvenv
+	    bmap.erase(evicted->key); // single tree lookup (was 2 via public erase)
+	    size -= evicted->size;
+	    delete evicted;
 	}
     }
     
@@ -182,67 +184,62 @@ class LRUBtree {
     }
 
     void erase(K key) {
-	LRUNode<K,V> *node;
-	if ((node = bmap[key])) {
+	auto it = bmap.find(key);
+	if (it == bmap.end()) return;
+	LRUNode<K,V> *node = it->second;
+	if (node) {
 	    erase(node);
-	    bmap.erase(key);
 	    size -= node->size;
 	    delete node;
 	}
+	bmap.erase(it);
     }
-    
-    inline void put(K key, V data, 
+
+    inline void put(K key, V data,
 	     void *kvenv = NULL, void *call_env = NULL,
 	     size_t size = 1) {
-	LRUNode<K,V> *node;
-	
-	this->size += size;	
-	check_size(call_env);
-	
-	// overwrite already existing key
-	if ((node = bmap[key])) {
+	// Single tree lookup: operator[] returns a reference to the slot,
+	// inserting a default-constructed (NULL) pointer if the key is absent.
+	LRUNode<K,V>*& slot = bmap[key];
+	LRUNode<K,V> *node = slot;
+
+	if (node) {
+	    // overwrite existing entry
 	    this->size -= node->size;
-	    erase(node);
+	    this->size += size;
+	    erase(node);              // unlink + free old kvenv
 	    node->kvenv = kvenv;
-	    node->next = latest;
 	    node->size = size;
-	    if (node->next) {
-		node->next->prev = node;
-	    }
-	    if (!oldest) {
-		oldest = node;
-	    }
-	    latest = node;
-	    node->key = key;
 	    node->data = data;
-	}
-
-	else if (!oldest) {
+	    // node->key is unchanged (same key we looked up)
+	} else {
 	    node = new LRUNode<K,V>;
 	    node->key = key;
 	    node->data = data;
 	    node->kvenv = kvenv;
 	    node->size = size;
-	    oldest = node;
-	    latest  = node;
-	    bmap[node->key] = node;
+	    slot = node;
+	    this->size += size;
 	}
 
-	else {
-	    node = new LRUNode<K,V>;
-	    node->key = key;
-	    node->data = data;	    
-	    node->kvenv = kvenv;
-	    node->size = size;
+	// link as most-recently-used (head of list)
+	node->next = latest;
+	node->prev = NULL;
+	if (latest) {
 	    latest->prev = node;
-	    node->next = latest;
-	    latest = node;
-	    bmap[node->key] = node;
 	}
+	latest = node;
+	if (!oldest) {
+	    oldest = node;
+	}
+
+	check_size(call_env);
     }
-    
+
     LRUNode<K,V>* get(K key) {
-	return bmap[key];
+	auto it = bmap.find(key);
+	if (it == bmap.end()) return NULL;
+	return it->second;
     }
     
     LRUNode<K,V>* getOldest() {
