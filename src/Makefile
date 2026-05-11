@@ -8,8 +8,7 @@ APP_SRC= $(APP_FILE).src
 APP_TARGET= $(EBIN)/$(APP_FILE)
 
 MODULES = \
-	btree_lru \
-	btree_lru_test \
+	btree_lru
 
 ERL_FILES = $(MODULES:%=%.erl)
 ERL_BEAMS = $(MODULES:%=$(EBIN)/%.beam)
